@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado Interativo de Inglês - 9º Ano</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #002147;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #000;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Scrollbar Estilizada */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #dc2626;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #b91c1c;
+    }
+
+    /* Header e Navegação */
+    header {
+      width: 100%;
+      max-width: 850px;
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 15px;
+      display: block;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      background-color: #001026;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+
+    .nav-grid {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid #ffffff;
+      background-color: #001530;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: #003366;
+    }
+
+    .nav-btn.active {
+      border-color: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .nav-btn.correct {
+      background-color: #16a34a !important;
+      border-color: #16a34a !important;
+      color: #fff;
+    }
+
+    .nav-btn.incorrect {
+      background-color: #dc2626 !important;
+      border-color: #dc2626 !important;
+      color: #fff;
+    }
+
+    /* Container Principal */
+    .container {
+      background-color: #ffffff;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 850px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .question-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* Pinned Text (Texto Fixo com Scroll) */
+    .pinned-text-box {
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid #dc2626;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #000;
+    }
+
+    .pinned-text-box h4 {
+      margin-bottom: 8px;
+      color: #dc2626;
+    }
+
+    /* Enunciado */
+    .statement {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #000;
+      font-weight: 500;
+    }
+
+    /* Opções de Resposta */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 15px;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      background-color: #fff;
+    }
+
+    .option-item:hover {
+      background-color: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .option-item input[type="radio"] {
+      margin-top: 4px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    .option-text {
+      font-size: 1rem;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    .option-item.selected {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+    }
+
+    .option-item.correct-bg {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+    }
+
+    .option-item.incorrect-bg {
+      background-color: #fee2e2 !important;
+      border-color: #dc2626 !important;
+    }
+
+    /* Justificativa / Feedback */
+    .feedback-box {
+      display: none;
+      background-color: #f8fafc;
+      border-left: 4px solid #0284c7;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #000;
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box strong {
+      color: #0284c7;
+    }
+
+    /* Botões de Ação na Ordem Obrigatória: [ Next ] [ Check ] [ Previous ] */
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      background-color: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      flex: 1;
+      max-width: 150px;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: #b91c1c;
+    }
+
+    .btn:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-finish {
+      background-color: #16a34a;
+      max-width: 200px;
+    }
+
+    .btn-finish:hover {
+      background-color: #15803d;
+    }
+
+    /* Modal de Resultado Final */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      color: #000;
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .modal-header h2 {
+      color: #dc2626;
+      font-size: 1.8rem;
+    }
+
+    .score-display {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      color: #0f172a;
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      background-color: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .stat-value.correct { color: #16a34a; }
+    .stat-value.incorrect { color: #dc2626; }
+
+    .diagnostics-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+
+    .diagnostics-list {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      .action-buttons {
+        flex-direction: row;
+      }
+      .btn {
+        padding: 10px 10px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="master.png" alt="Logo Master" class="logo" onerror="this.onerror=null; this.src='https://placehold.co/180x60/001026/ffffff?text=LOGO+MASTER';">
+    <h1>Simulado de Língua Inglesa - 9º Ano</h1>
+    <div class="nav-grid" id="nav-grid">
+      <!-- Botões de 1 a 10 gerados via JS -->
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="question-header">
+      <span class="question-title" id="question-title">Questão 1 de 10</span>
+    </div>
+
+    <!-- Pinned Text (Exibido nas Questões 1 e 2) -->
+    <div class="pinned-text-box" id="pinned-text-box" style="display: none;">
+      <h4>Texto Base:</h4>
+      <p id="pinned-text-content"></p>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement" id="statement-text">
+      <!-- Enunciado será carregado aqui -->
+    </div>
+
+    <!-- Opções -->
+    <div class="options-list" id="options-list">
+      <!-- Opções serão carregadas aqui -->
+    </div>
+
+    <!-- Justificativa -->
+    <div class="feedback-box" id="feedback-box">
+      <strong>Justificativa:</strong> <span id="feedback-text"></span>
+    </div>
+
+    <!-- Botões de Ação: [ Next ] [ Check ] [ Previous ] -->
+    <div class="action-buttons">
+      <button class="btn" id="btn-next" onclick="nextQuestion()">Next</button>
+      <button class="btn" id="btn-check" onclick="checkAnswer()">Check</button>
+      <button class="btn" id="btn-prev" onclick="prevQuestion()">Previous</button>
+    </div>
+  </main>
+
+  <!-- Modal de Resultado Final -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Resultado do Simulado</h2>
+      </div>
+      <div class="score-display" id="score-display">
+        Sua Nota: 0,0 / 10,0
+      </div>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div>Acertos</div>
+          <div class="stat-value correct" id="stat-correct">0 (0%)</div>
+        </div>
+        <div class="stat-item">
+          <div>Erros</div>
+          <div class="stat-value incorrect" id="stat-incorrect">0 (0%)</div>
+        </div>
+      </div>
+      <div class="diagnostics-title">Diagnóstico e Recomendações Pedagógicas:</div>
+      <ul class="diagnostics-list" id="diagnostics-list">
+        <!-- Recomendações dinâmicas -->
+      </ul>
+      <div class="modal-footer">
+        <button class="btn btn-finish" onclick="restartQuiz()">Refazer Simulado</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // TEXTO BASE PARA AS QUESTÕES 1 E 2
+    const textBase12 = `"Human Action and Climate Realities"\n\n` +
+      `Global warming is driven directly by human activities, primarily the burning of fossil fuels, deforestation, and industrial expansion. ` +
+      `According to recent findings by the Intergovernmental Panel on Climate Change (IPCC), atmospheric concentrations of carbon dioxide have surpassed 420 parts per million (ppm), a level unprecedented in human history. ` +
+      `As a direct consequence, global average temperatures are now 1.1°C to 1.2°C above pre-industrial averages.\n\n` +
+      `These changing temperatures trigger severe consequences across ecosystems. Climate models demonstrate that if global temperatures rise beyond 1.5°C, extreme heatwaves, prolonged droughts, and rising sea levels will intensify significantly. ` +
+      `Environmentalists emphasize that if societies adopt renewable energy today, they protect vulnerable coastal regions for future generations. Furthermore, scientists warn that if politicians had more public support, they would implement strict climate regulations immediately.`;
+
+    // ESTRUTURA DOS DADOS DAS QUESTÕES DO 9º ANO
+    const rawQuestions = [
+      {
+        id: 1,
+        topic: "Compreensão Textual com Dados Reais",
+        pinnedText: textBase12,
+        statement: "Com base nos dados científicos apresentados no texto sobre a ação humana e as mudanças climáticas, assinale a alternativa que traz uma conclusão CORRETA sobre a situação atual do planeta:",
+        correctKey: "B",
+        options: {
+          A: "A concentração atual de dióxido de carbono na atmosfera permanece estável e dentro dos limites históricos normais.",
+          B: "O aumento das temperaturas globais de 1.1°C a 1.2°C acima dos níveis pré-industriais é consequência direta de atividades humanas como a queima de combustíveis fósseis e o desmatamento.",
+          C: "Os modelos climáticos do IPCC indicam que uma elevação de temperatura acima de 1.5°C não trará alterações severas para os ecossistemas terrestres.",
+          D: "A expansão industrial e o desmatamento são causados exclusivamente por fenômenos naturais não relacionados ao ser humano.",
+          E: "A adoção de energias renováveis é considerada ineficaz para conter o aumento do nível do mar em áreas costeiras."
+        },
+        justification: "Resposta correta: B. O texto explicita que as temperaturas mundiais subiram entre 1.1°C e 1.2°C em relação à era pré-industrial devido à queima de combustíveis fósseis, desmatamento e expansão industrial humana."
+      },
+      {
+        id: 2,
+        topic: "Compreensão Textual e Análise do Texto",
+        pinnedText: textBase12,
+        statement: "De acordo com as advertências dos cientistas mencionadas no final do texto, qual condição é apresentada como essencial para a implementação imediata de regulamentações climáticas rigorosas?",
+        correctKey: "D",
+        options: {
+          A: "A eliminação completa das pesquisas científicas sobre o dióxido de carbono.",
+          B: "O aumento ininterrupto da queima de combustíveis fósseis pelas indústrias.",
+          C: "O aumento das temperaturas globais acima de 5.0°C nas próximas semanas.",
+          D: "Um maior apoio público direcionado aos políticos para que adotem medidas legislativas firmes.",
+          E: "A transferência de populações costeiras para regiões áridas desabitadas."
+        },
+        justification: "Resposta correta: D. O texto afirma que 'if politicians had more public support, they would implement strict climate regulations immediately' (se os políticos tivessem mais apoio público, implementariam regras severas imediatamente)."
+      },
+      {
+        id: 3,
+        topic: "Zero Conditional & Uso Correto da Vírgula",
+        pinnedText: null,
+        statement: "A <b>Zero Conditional</b> expressa verdades universais ou fatos científicos no presente (<i>If + Simple Present, Simple Present</i>).\n\nAssinale a alternativa que apresenta a estrutura gramatical E o uso de pontuação (vírgula) totalmente CORRETOS:",
+        correctKey: "A",
+        options: {
+          A: "If greenhouse gases trap heat in the atmosphere, the planet gets warmer.",
+          B: "If greenhouse gases trap heat in the atmosphere the planet gets warmer.",
+          C: "The planet gets warmer, if greenhouse gases trap heat in the atmosphere.",
+          D: "If greenhouse gases will trap heat in the atmosphere, the planet got warmer.",
+          E: "If greenhouse gases trapped heat in the atmosphere, the planet get warmer."
+        },
+        justification: "Resposta correta: A. Na Zero Conditional, ambas as orações usam o Simple Present ('trap' / 'gets'). Quando a oração com 'if' inicia a frase, o uso da vírgula é obrigatório. Quando a oração com 'if' vem na segunda posição (opção C), não se usa vírgula."
+      },
+      {
+        id: 4,
+        topic: "First Conditional & Pontuação",
+        pinnedText: null,
+        statement: "A <b>First Conditional</b> expressa situações futuras reais ou prováveis (<i>If + Simple Present, Will + Base Verb</i>).\n\nAnalise a frase a seguir e assinale a opção com a pontuação e gramática perfeitas ao inverter a ordem das orações:",
+        correctKey: "C",
+        options: {
+          A: "Societies will reduce air pollution, if they invest in solar energy.",
+          B: "If societies will invest in solar energy, they reduce air pollution.",
+          C: "Societies will reduce air pollution if they invest in solar energy.",
+          D: "Societies reduce air pollution if they will invest in solar energy.",
+          E: "If societies invest in solar energy; societies will reduce air pollution."
+        },
+        justification: "Resposta correta: C. Na First Conditional, a oração com 'if' fica no Simple Present ('invest') e a oração principal no futuro ('will reduce'). Quando a oração principal vem primeiro, NÃO se utiliza vírgula antes de 'if'."
+      },
+      {
+        id: 5,
+        topic: "Second Conditional & Formação do Verbo 'To Be'",
+        pinnedText: null,
+        statement: "A <b>Second Conditional</b> expressa situações hipotéticas ou irreais no presente/futuro (<i>If + Simple Past, Would + Base Verb</i>). Lembre-se que, no padrão formal da língua inglesa, utiliza-se <b>were</b> para todos os sujeitos.\n\nAssinale a alternativa gramaticalmente CORRETA:",
+        correctKey: "E",
+        options: {
+          A: "If I am the president of the climate committee, I would ban deforestation.",
+          B: "If I was the president of the climate committee I will ban deforestation.",
+          C: "I would ban deforestation, if I were the president of the climate committee.",
+          D: "If I would be the president of the climate committee, I banned deforestation.",
+          E: "If I were the president of the climate committee, I would ban deforestation."
+        },
+        justification: "Resposta correta: E. Na Second Conditional formal, usa-se 'were' na oração com 'if' ('If I were...') acompanhado de vírgula antes da oração principal com 'would' ('I would ban...')."
+      },
+      {
+        id: 6,
+        topic: "Diferenciação entre First e Second Conditionals",
+        pinnedText: null,
+        statement: "Examine as duas orações a seguir sobre ações ambientais comunitárias:\n\n1. <i>If we recycle paper and plastic, we save natural resources.</i> (Fato/Zero)\n2. <i>If our city ____________ more recycling bins, people ____________ more waste.</i> (Hipótese no presente / Second Conditional)\n\nAssinale a alternativa que completa a frase 2 com a Second Conditional e a pontuação corretas:",
+        correctKey: "B",
+        options: {
+          A: "provided, would separate",
+          B: "provided, would separate",
+          C: "provides, will separate",
+          D: "would provide, separated",
+          E: "provided, will separate"
+        },
+        justification: "Resposta correta: B. A Second Conditional exige o verbo no Simple Past ('provided') na oração com 'if' e 'would' + verbo base ('would separate') na oração principal."
+      },
+      {
+        id: 7,
+        topic: "Reported Speech - Afirmativa no Simple Present",
+        pinnedText: null,
+        statement: "Leia a frase dita por um ativista ambiental em seu discurso direto:\n\n<b>\"Modern industries pollute local rivers every day.\"</b>\n\nAssinale a alternativa que converte essa afirmação corretamente para o discurso indireto (Reported Speech):",
+        correctKey: "A",
+        options: {
+          A: "The activist said that modern industries polluted local rivers every day.",
+          B: "The activist said that modern industries pollute local rivers every day.",
+          C: "The activist said that modern industries will pollute local rivers every day.",
+          D: "The activist told that modern industries polluting local rivers every day.",
+          E: "The activist asked if modern industries polluted local rivers every day."
+        },
+        justification: "Resposta correta: A. No Reported Speech, o verbo no Simple Present ('pollute') sofre o recuo temporal (backshift) para o Simple Past ('polluted')."
+      },
+      {
+        id: 8,
+        topic: "Reported Speech - Afirmativa no Present Continuous",
+        pinnedText: null,
+        statement: "Considere o anúncio feito por um meteorologista na televisão:\n\n<b>\"Glaciers are melting rapidly in North America.\"</b>\n\nAssinale a opção que realiza a transposição adequada para o discurso indireto (Reported Speech):",
+        correctKey: "D",
+        options: {
+          A: "The meteorologist announced that glaciers are melting rapidly in North America.",
+          B: "The meteorologist announced that glaciers have melted rapidly in North America.",
+          C: "The meteorologist announced that glaciers melt rapidly in North America.",
+          D: "The meteorologist announced that glaciers were melting rapidly in North America.",
+          E: "The meteorologist announced if glaciers were melting rapidly in North America."
+        },
+        justification: "Resposta correta: D. O Present Continuous ('are melting') recua um tempo verbal no discurso indireto, transformando-se em Past Continuous ('were melting')."
+      },
+      {
+        id: 9,
+        topic: "Reported Speech - Pergunta Interrogativa (Yes/No Question)",
+        pinnedText: null,
+        statement: "Examine a pergunta feita por uma aluna durante a aula de geografia:\n\n<b>\"Does carbon dioxide cause global warming?\"</b> — asked the student.\n\nAssinale a alternativa que transpõe essa pergunta para o discurso indireto (Reported Speech):",
+        correctKey: "C",
+        options: {
+          A: "The student asked does carbon dioxide cause global warming.",
+          B: "The student asked that carbon dioxide caused global warming.",
+          C: "The student asked if carbon dioxide caused global warming.",
+          D: "The student asked if did carbon dioxide cause global warming.",
+          E: "The student asked whether carbon dioxide causes global warming."
+        },
+        justification: "Resposta correta: C. Em perguntas do tipo Yes/No no Simple Present, utiliza-se a conjunção 'if', elimina-se o auxiliar 'does', coloca-se a frase em ordem direta e o verbo principal vai para o Simple Past ('caused')."
+      },
+      {
+        id: 10,
+        topic: "Reported Speech - Pergunta Interrogativa (Wh- Question)",
+        pinnedText: null,
+        statement: "Considere a pergunta feita por um jornalista ao cientista:\n\n<b>\"Where do cities dispose of their plastic waste?\"</b> — asked the reporter.\n\nAssinale a alternativa que apresenta a conversão correta no discurso indireto (Reported Speech):",
+        correctKey: "E",
+        options: {
+          A: "The reporter asked where do cities dispose of their plastic waste.",
+          B: "The reporter asked if where cities disposed of their plastic waste.",
+          C: "The reporter asked where did cities dispose of their plastic waste.",
+          D: "The reporter asked that where cities dispose of their plastic waste.",
+          E: "The reporter asked where cities disposed of their plastic waste."
+        },
+        justification: "Resposta correta: E. Em Wh-Questions, mantém-se o pronome interrogativo ('where'), elimina-se o auxiliar ('do'), coloca-se o sujeito primeiro ('cities') e o verbo passa para o Simple Past ('disposed')."
+      }
+    ];
+
+    // ESTADO DA APLICAÇÃO E EMBARALHAMENTO DO GABARITO (Fisher-Yates)
+    let processedQuestions = [];
+    let userAnswers = {};
+    let checkedQuestions = {};
+    let currentQuestionIndex = 0;
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuizData() {
+      processedQuestions = rawQuestions.map((q) => {
+        const originalKeys = ['A', 'B', 'C', 'D', 'E'];
+        const optionsList = originalKeys.map(key => ({
+          originalKey: key,
+          text: q.options[key]
+        }));
+
+        // Embaralhamento das opções
+        const shuffledOptions = shuffleArray(optionsList);
+
+        const newLetterLabels = ['A', 'B', 'C', 'D', 'E'];
+        let mappedCorrectLetter = '';
+
+        const finalOptions = shuffledOptions.map((opt, index) => {
+          const currentLabel = newLetterLabels[index];
+          if (opt.originalKey === q.correctKey) {
+            mappedCorrectLetter = currentLabel;
+          }
+          return {
+            label: currentLabel,
+            text: opt.text,
+            originalKey: opt.originalKey
+          };
+        });
+
+        return {
+          ...q,
+          displayOptions: finalOptions,
+          correctDisplayLetter: mappedCorrectLetter
+        };
+      });
+    }
+
+    function buildNavGrid() {
+      const navGrid = document.getElementById('nav-grid');
+      navGrid.innerHTML = '';
+      for (let i = 0; i < processedQuestions.length; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.id = `nav-btn-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => jumpToQuestion(i);
+        navGrid.appendChild(btn);
+      }
+      updateNavStatus();
+    }
+
+    function updateNavStatus() {
+      for (let i = 0; i < processedQuestions.length; i++) {
+        const btn = document.getElementById(`nav-btn-${i}`);
+        if (!btn) continue;
+        btn.classList.remove('active', 'correct', 'incorrect');
+
+        if (i === currentQuestionIndex) {
+          btn.classList.add('active');
+        }
+
+        if (checkedQuestions[i]) {
+          const isCorrect = userAnswers[i] === processedQuestions[i].correctDisplayLetter;
+          if (isCorrect) {
+            btn.classList.add('correct');
+          } else {
+            btn.classList.add('incorrect');
+          }
+        }
+      }
+    }
+
+    function renderQuestion(index) {
+      const q = processedQuestions[index];
+
+      document.getElementById('question-title').innerText = `Questão ${index + 1} de 10`;
+
+      // Pinned Text Box para Q1 e Q2
+      const pinnedBox = document.getElementById('pinned-text-box');
+      const pinnedContent = document.getElementById('pinned-text-content');
+      if (q.pinnedText) {
+        pinnedContent.innerText = q.pinnedText;
+        pinnedBox.style.display = 'block';
+      } else {
+        pinnedBox.style.display = 'none';
+      }
+
+      document.getElementById('statement-text').innerHTML = q.statement.replace(/\n/g, '<br>');
+
+      const optionsContainer = document.getElementById('options-list');
+      optionsContainer.innerHTML = '';
+
+      const isChecked = checkedQuestions[index];
+
+      q.displayOptions.forEach((opt) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'option-item';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `option-${index}`;
+        radio.value = opt.label;
+        radio.id = `opt-${opt.label}`;
+        radio.disabled = !!isChecked;
+
+        if (userAnswers[index] === opt.label) {
+          radio.checked = true;
+          itemDiv.classList.add('selected');
+        }
+
+        if (isChecked) {
+          if (opt.label === q.correctDisplayLetter) {
+            itemDiv.classList.add('correct-bg');
+          } else if (userAnswers[index] === opt.label) {
+            itemDiv.classList.add('incorrect-bg');
+          }
+        } else {
+          itemDiv.onclick = () => selectOption(index, opt.label);
+        }
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'option-text';
+        labelSpan.innerHTML = `<strong>${opt.label})</strong> ${opt.text}`;
+
+        itemDiv.appendChild(radio);
+        itemDiv.appendChild(labelSpan);
+        optionsContainer.appendChild(itemDiv);
+      });
+
+      const feedbackBox = document.getElementById('feedback-box');
+      const feedbackText = document.getElementById('feedback-text');
+      if (isChecked) {
+        let textJust = q.justification;
+        textJust = textJust.replace(/Resposta correta: [A-E]\./, `Resposta correta: ${q.correctDisplayLetter}.`);
+        feedbackText.innerText = textJust;
+        feedbackBox.classList.add('show');
+      } else {
+        feedbackBox.classList.remove('show');
+      }
+
+      const btnCheck = document.getElementById('btn-check');
+      btnCheck.disabled = !userAnswers[index] || isChecked;
+
+      const btnNext = document.getElementById('btn-next');
+      if (index === processedQuestions.length - 1) {
+        btnNext.innerText = 'Finish';
+        btnNext.classList.add('btn-finish');
+      } else {
+        btnNext.innerText = 'Next';
+        btnNext.classList.remove('btn-finish');
+      }
+
+      const btnPrev = document.getElementById('btn-prev');
+      btnPrev.disabled = index === 0;
+
+      updateNavStatus();
+    }
+
+    function selectOption(qIndex, label) {
+      if (checkedQuestions[qIndex]) return;
+      userAnswers[qIndex] = label;
+
+      const items = document.querySelectorAll('.option-item');
+      items.forEach(item => item.classList.remove('selected'));
+
+      const radio = document.getElementById(`opt-${label}`);
+      if (radio) {
+        radio.checked = true;
+        radio.closest('.option-item').classList.add('selected');
+      }
+
+      document.getElementById('btn-check').disabled = false;
+    }
+
+    function checkAnswer() {
+      if (!userAnswers[currentQuestionIndex]) return;
+      checkedQuestions[currentQuestionIndex] = true;
+      renderQuestion(currentQuestionIndex);
+    }
+
+    function jumpToQuestion(index) {
+      currentQuestionIndex = index;
+      renderQuestion(currentQuestionIndex);
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < processedQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion(currentQuestionIndex);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion(currentQuestionIndex);
+      }
+    }
+
+    function finishQuiz() {
+      let totalCorrect = 0;
+      let topicErrors = {};
+      let topicTotals = {};
+
+      processedQuestions.forEach((q, idx) => {
+        const topic = q.topic;
+        if (!topicTotals[topic]) {
+          topicTotals[topic] = 0;
+          topicErrors[topic] = 0;
+        }
+        topicTotals[topic]++;
+
+        const userAns = userAnswers[idx];
+        if (userAns === q.correctDisplayLetter) {
+          totalCorrect++;
+        } else {
+          topicErrors[topic]++;
+        }
+      });
+
+      const totalQuestions = processedQuestions.length;
+      const totalIncorrect = totalQuestions - totalCorrect;
+      
+      const score = (totalCorrect * 1.0).toFixed(1);
+
+      const correctPct = Math.round((totalCorrect / totalQuestions) * 100);
+      const incorrectPct = Math.round((totalIncorrect / totalQuestions) * 100);
+
+      document.getElementById('score-display').innerText = `Sua Nota: ${score.replace('.', ',')} / 10,0`;
+      document.getElementById('stat-correct').innerText = `${totalCorrect} (${correctPct}%)`;
+      document.getElementById('stat-incorrect').innerText = `${totalIncorrect} (${incorrectPct}%)`;
+
+      const diagnosticsList = document.getElementById('diagnostics-list');
+      diagnosticsList.innerHTML = '';
+
+      let needsRevision = false;
+
+      for (const topic in topicTotals) {
+        const errors = topicErrors[topic];
+        const total = topicTotals[topic];
+        const errorPct = (errors / total) * 100;
+
+        if (errorPct > 30) {
+          needsRevision = true;
+          const li = document.createElement('li');
+          let recommendationText = "";
+
+          if (topic.includes("Compreensão")) {
+            recommendationText = "<strong>Compreensão Textual:</strong> Praticar a leitura e interpretação de dados científicos sobre aquecimento global e ação humana.";
+          } else if (topic.includes("Conditional")) {
+            recommendationText = "<strong>Orações Condicionais (Zero, First e Second):</strong> Estudar a flexão verbal e o uso correto da vírgula (usar vírgula quando a oração com 'if' vem primeiro; omitir vírgula quando a oração com 'if' vem na segunda posição).";
+          } else if (topic.includes("Reported Speech")) {
+            recommendationText = "<strong>Reported Speech (Discurso Indireto):</strong> Revisar o recuo temporal dos verbos e a ordem direta em frases afirmativas e perguntas (Yes/No e Wh-Questions).";
+          } else {
+            recommendationText = `<strong>${topic}:</strong> Recomenda-se revisar este conteúdo específico (Percentual de erro: ${Math.round(errorPct)}%).`;
+          }
+
+          li.innerHTML = recommendationText;
+          diagnosticsList.appendChild(li);
+        }
+      }
+
+      if (!needsRevision) {
+        const li = document.createElement('li');
+        li.innerHTML = "<strong>Parabéns!</strong> Você demonstrou excelente domínio em todos os tópicos avaliados (taxa de erro inferior a 30%). Continue praticando!";
+        diagnosticsList.appendChild(li);
+      }
+
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    function restartQuiz() {
+      userAnswers = {};
+      checkedQuestions = {};
+      currentQuestionIndex = 0;
+      document.getElementById('modal-overlay').style.display = 'none';
+      initQuizData();
+      buildNavGrid();
+      renderQuestion(0);
+    }
+
+    window.onload = function() {
+      initQuizData();
+      buildNavGrid();
+      renderQuestion(0);
+    };
+  </script>
+</body>
+</html>
